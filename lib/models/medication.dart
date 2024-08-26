@@ -3,14 +3,15 @@ class Medication {
   final int userId;
   final String name;
   final String dosage;
-  final DateTime dateTime;
+  final String dateTime;
 
-  Medication(
-      {this.id,
-      required this.userId,
-      required this.name,
-      required this.dosage,
-      required this.dateTime});
+  Medication({
+    this.id,
+    required this.userId,
+    required this.name,
+    required this.dosage,
+    required this.dateTime,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -18,7 +19,7 @@ class Medication {
       'userId': userId,
       'name': name,
       'dosage': dosage,
-      'dateTime': dateTime.toIso8601String(),
+      'dateTime': dateTime,
     };
   }
 
@@ -28,7 +29,7 @@ class Medication {
       userId: map['userId'],
       name: map['name'],
       dosage: map['dosage'],
-      dateTime: DateTime.parse(map['dateTime']),
+      dateTime: map['dateTime'],
     );
   }
 }

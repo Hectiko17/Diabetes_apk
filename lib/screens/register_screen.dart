@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:diabetes_apk/db/database_helper.dart';
 import 'package:diabetes_apk/models/user.dart';
+import 'package:diabetes_apk/db/database_helper.dart';
 
 class RegisterScreen extends StatefulWidget {
   @override
@@ -15,21 +15,66 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController ageController = TextEditingController();
   final TextEditingController weightController = TextEditingController();
   final TextEditingController heightController = TextEditingController();
-  String role = 'patient';
+  String selectedRole = 'patient'; // Valor predeterminado
+
+  void _register() async {
+    final username = usernameController.text;
+    final password = passwordController.text;
+    final firstName = firstNameController.text;
+    final lastName = lastNameController.text;
+    final age = int.tryParse(ageController.text);
+    final weight = double.tryParse(weightController.text);
+    final height = double.tryParse(heightController.text);
+
+    // Validar que los campos no estén vacíos
+    if (username.isEmpty ||
+        password.isEmpty ||
+        firstName.isEmpty ||
+        lastName.isEmpty ||
+        age == null ||
+        weight == null ||
+        height == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content:
+                Text('Por favor, completa todos los campos correctamente.')),
+      );
+      return;
+    }
+
+    final newUser = User(
+      username: username,
+      password: password,
+      role: selectedRole,
+      firstName: firstName,
+      lastName: lastName,
+      age: age,
+      weight: weight,
+      height: height,
+    );
+
+    await DatabaseHelper.instance.insertUser(newUser);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Registro exitoso.')),
+    );
+
+    Navigator.pushReplacementNamed(context, '/login');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Registro'),
+        title: Text('Registro de Usuario'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: ListView(
           children: <Widget>[
             TextField(
               controller: usernameController,
-              decoration: InputDecoration(labelText: 'Nombre de usuario'),
+              decoration: InputDecoration(labelText: 'Nombre de Usuario'),
             ),
             TextField(
               controller: passwordController,
@@ -42,7 +87,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             TextField(
               controller: lastNameController,
-              decoration: InputDecoration(labelText: 'Apellidos'),
+              decoration: InputDecoration(labelText: 'Apellido'),
             ),
             TextField(
               controller: ageController,
@@ -56,50 +101,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
             ),
             TextField(
               controller: heightController,
-              decoration: InputDecoration(labelText: 'Tamaño (cm)'),
+              decoration: InputDecoration(labelText: 'Altura (cm)'),
               keyboardType: TextInputType.number,
             ),
             DropdownButton<String>(
-              value: role,
+              value: selectedRole,
               onChanged: (String? newValue) {
                 setState(() {
-                  role = newValue!;
+                  selectedRole = newValue!;
                 });
               },
               items: <String>['patient', 'doctor']
                   .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value),
+                  child: Text(value == 'patient' ? 'Paciente' : 'Médico'),
                 );
               }).toList(),
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () async {
-                final username = usernameController.text;
-                final password = passwordController.text;
-                final firstName = firstNameController.text;
-                final lastName = lastNameController.text;
-                final age = int.parse(ageController.text);
-                final weight = double.parse(weightController.text);
-                final height = double.parse(heightController.text);
-
-                final newUser = User(
-                  username: username,
-                  password: password,
-                  role: role,
-                  firstName: firstName,
-                  lastName: lastName,
-                  age: age,
-                  weight: weight,
-                  height: height,
-                );
-
-                await DatabaseHelper.instance.insertUser(newUser);
-                Navigator.pushReplacementNamed(context, '/login');
-              },
-              child: Text('Registrarse'),
+              onPressed: _register,
+              child: Text('Registrar'),
             ),
           ],
         ),

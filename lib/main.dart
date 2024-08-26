@@ -4,7 +4,6 @@ import 'package:diabetes_apk/screens/register_screen.dart';
 import 'package:diabetes_apk/screens/admin_home_screen.dart';
 import 'package:diabetes_apk/screens/doctor_home_screen.dart';
 import 'package:diabetes_apk/screens/patient_home_screen.dart';
-import 'package:diabetes_apk/screens/register_medication_screen.dart';
 import 'package:diabetes_apk/screens/register_activity_screen.dart';
 import 'package:diabetes_apk/screens/reports_screen.dart';
 import 'package:diabetes_apk/screens/reminders_screen.dart';
@@ -35,7 +34,6 @@ class DiabetesApk extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/adminHome': (context) => AdminHomeScreen(),
         '/doctorHome': (context) => DoctorHomeScreen(),
-        '/registerMedication': (context) => RegisterMedicationScreen(),
         '/registerActivity': (context) => RegisterActivityScreen(),
         '/reports': (context) => ReportsScreen(),
         '/reminders': (context) => RemindersScreen(),

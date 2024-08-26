@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:diabetes_apk/models/user.dart';
 import 'package:diabetes_apk/screens/register_glucose_screen.dart';
 import 'package:diabetes_apk/screens/register_meal_screen.dart';
+import 'package:diabetes_apk/screens/register_medication_screen.dart';
 
 class PatientHomeScreen extends StatefulWidget {
   final User user;
@@ -22,6 +23,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
     super.initState();
     _screens.add(RegisterGlucoseScreen(user: widget.user));
     _screens.add(RegisterMealScreen(user: widget.user));
+    _screens.add(RegisterMedicationScreen(user: widget.user));
   }
 
   void _onItemTapped(int index) {
@@ -54,6 +56,10 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.fastfood),
             label: 'Comidas',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.medication),
+            label: 'Medicamentos',
           ),
         ],
         currentIndex: _selectedIndex,

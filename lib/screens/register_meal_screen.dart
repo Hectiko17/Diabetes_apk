@@ -25,26 +25,48 @@ class _RegisterMealScreenState extends State<RegisterMealScreen> {
   }
 
   void _addMeal() async {
-    final mealName = mealNameController.text;
-    final calories = int.parse(caloriesController.text);
-    final now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
+    try {
+      final mealName = mealNameController.text;
+      final calories = int.tryParse(caloriesController.text);
 
-    final newMeal = Meal(
-      userId: widget.user.id!,
-      mealName: mealName,
-      calories: calories,
-      dateTime: formattedDate,
-    );
+      // Validar que los campos no estén vacíos
+      if (mealName.isEmpty || calories == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content:
+                  Text('Por favor, completa todos los campos correctamente.')),
+        );
+        return;
+      }
 
-    await DatabaseHelper.instance.insertMeal(newMeal);
+      final now = DateTime.now();
+      final formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
 
-    setState(() {
-      _meals = DatabaseHelper.instance.getMealsByUser(widget.user.id!);
-    });
+      final newMeal = Meal(
+        userId: widget.user.id!,
+        mealName: mealName,
+        calories: calories,
+        dateTime: formattedDate,
+      );
 
-    mealNameController.clear();
-    caloriesController.clear();
+      await DatabaseHelper.instance.insertMeal(newMeal);
+
+      setState(() {
+        _meals = DatabaseHelper.instance.getMealsByUser(widget.user.id!);
+      });
+
+      mealNameController.clear();
+      caloriesController.clear();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Comida registrada exitosamente.')),
+      );
+    } catch (e) {
+      print('Error al registrar la comida: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ocurrió un error al registrar la comida.')),
+      );
+    }
   }
 
   @override

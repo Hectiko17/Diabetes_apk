@@ -58,7 +58,7 @@ class DatabaseHelper {
     CREATE TABLE meals (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       userId INTEGER NOT NULL,
-      mealName TEXT NOT NULL,  // Asegúrate de que esta columna exista
+      mealName TEXT NOT NULL,
       calories INTEGER NOT NULL,
       dateTime TEXT NOT NULL,
       FOREIGN KEY (userId) REFERENCES users (id)
@@ -190,5 +190,23 @@ class DatabaseHelper {
     final db = await instance.database;
     final result = await db.query('meals', orderBy: 'dateTime DESC');
     return result.map((json) => Meal.fromMap(json)).toList();
+  }
+
+  Future<void> insertMedication(Medication medication) async {
+    final db = await instance.database;
+    await db.insert('medications', medication.toMap());
+  }
+
+  Future<List<Medication>> getMedicationsByUser(int userId) async {
+    final db = await instance.database;
+    final result = await db.query('medications',
+        where: 'userId = ?', whereArgs: [userId], orderBy: 'dateTime DESC');
+    return result.map((json) => Medication.fromMap(json)).toList();
+  }
+
+  Future<List<Medication>> getAllMedications() async {
+    final db = await instance.database;
+    final result = await db.query('medications', orderBy: 'dateTime DESC');
+    return result.map((json) => Medication.fromMap(json)).toList();
   }
 }
