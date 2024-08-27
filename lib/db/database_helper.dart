@@ -197,6 +197,79 @@ class DatabaseHelper {
     await db.insert('medications', medication.toMap());
   }
 
+  // Eliminar un nivel de glucemia
+  Future<void> deleteGlucoseLevel(int id) async {
+    final db = await instance.database;
+    await db.delete('glucose_levels', where: 'id = ?', whereArgs: [id]);
+  }
+
+// Eliminar una comida
+  Future<void> deleteMeal(int id) async {
+    final db = await instance.database;
+    await db.delete('meals', where: 'id = ?', whereArgs: [id]);
+  }
+
+// Eliminar un medicamento
+  Future<void> deleteMedication(int id) async {
+    final db = await instance.database;
+    await db.delete('medications', where: 'id = ?', whereArgs: [id]);
+  }
+
+  // Editar un nivel de glucemia
+  Future<void> updateGlucoseLevel(GlucoseLevel level) async {
+    final db = await instance.database;
+    await db.update('glucose_levels', level.toMap(),
+        where: 'id = ?', whereArgs: [level.id]);
+  }
+
+  // Insertar una actividad
+  Future<void> insertActivity(Activity activity) async {
+    final db = await instance.database;
+    await db.insert('activities', activity.toMap());
+  }
+
+// Obtener todas las actividades de un usuario
+  Future<List<Activity>> getActivitiesByUser(int userId) async {
+    final db = await instance.database;
+    final result = await db.query('activities',
+        where: 'userId = ?', whereArgs: [userId], orderBy: 'dateTime DESC');
+    return result.map((json) => Activity.fromMap(json)).toList();
+  }
+
+// Obtener todas las actividades de todos los usuarios
+  Future<List<Activity>> getAllActivities() async {
+    final db = await instance.database;
+    final result = await db.query('activities', orderBy: 'dateTime DESC');
+    return result.map((json) => Activity.fromMap(json)).toList();
+  }
+
+// Actualizar una actividad
+  Future<void> updateActivity(Activity activity) async {
+    final db = await instance.database;
+    await db.update('activities', activity.toMap(),
+        where: 'id = ?', whereArgs: [activity.id]);
+  }
+
+// Eliminar una actividad
+  Future<void> deleteActivity(int id) async {
+    final db = await instance.database;
+    await db.delete('activities', where: 'id = ?', whereArgs: [id]);
+  }
+
+// Editar una comida
+  Future<void> updateMeal(Meal meal) async {
+    final db = await instance.database;
+    await db
+        .update('meals', meal.toMap(), where: 'id = ?', whereArgs: [meal.id]);
+  }
+
+// Editar un medicamento
+  Future<void> updateMedication(Medication medication) async {
+    final db = await instance.database;
+    await db.update('medications', medication.toMap(),
+        where: 'id = ?', whereArgs: [medication.id]);
+  }
+
   Future<List<Medication>> getMedicationsByUser(int userId) async {
     final db = await instance.database;
     final result = await db.query('medications',

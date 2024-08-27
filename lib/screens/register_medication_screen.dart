@@ -18,6 +18,8 @@ class _RegisterMedicationScreenState extends State<RegisterMedicationScreen> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController dosageController = TextEditingController();
   late Future<List<Medication>> _medications;
+  Medication?
+      _editingMedication; // Variable para mantener el medicamento que se está editando
 
   @override
   void initState() {
@@ -26,11 +28,9 @@ class _RegisterMedicationScreenState extends State<RegisterMedicationScreen> {
         DatabaseHelper.instance.getMedicationsByUser(widget.user.id!);
   }
 
-  void _addMedication() async {
+  void _addOrUpdateMedication() async {
     final name = nameController.text;
     final dosage = dosageController.text;
-    final now = DateTime.now();
-    final formattedDate = DateFormat('yyyy-MM-dd – kk:mm').format(now);
 
     if (name.isEmpty || dosage.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -40,24 +40,54 @@ class _RegisterMedicationScreenState extends State<RegisterMedicationScreen> {
     }
 
     final newMedication = Medication(
+      id: _editingMedication?.id,
       userId: widget.user.id!,
       name: name,
       dosage: dosage,
-      dateTime: formattedDate,
+      dateTime: _editingMedication?.dateTime ??
+          DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.now()),
     );
 
-    await DatabaseHelper.instance.insertMedication(newMedication);
+    if (_editingMedication == null) {
+      await DatabaseHelper.instance.insertMedication(newMedication);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Medicamento registrado exitosamente.')),
+      );
+    } else {
+      await DatabaseHelper.instance.updateMedication(newMedication);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Medicamento actualizado exitosamente.')),
+      );
+    }
+
+    setState(() {
+      _medications =
+          DatabaseHelper.instance.getMedicationsByUser(widget.user.id!);
+      _editingMedication = null; // Restablecer la variable de edición
+    });
+
+    nameController.clear();
+    dosageController.clear();
+  }
+
+  void _startEditing(Medication medication) {
+    setState(() {
+      _editingMedication = medication;
+      nameController.text = medication.name;
+      dosageController.text = medication.dosage;
+    });
+  }
+
+  void _deleteMedication(int id) async {
+    await DatabaseHelper.instance.deleteMedication(id);
 
     setState(() {
       _medications =
           DatabaseHelper.instance.getMedicationsByUser(widget.user.id!);
     });
 
-    nameController.clear();
-    dosageController.clear();
-
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Medicamento registrado exitosamente.')),
+      SnackBar(content: Text('Medicamento eliminado exitosamente.')),
     );
   }
 
@@ -81,8 +111,10 @@ class _RegisterMedicationScreenState extends State<RegisterMedicationScreen> {
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _addMedication,
-              child: Text('Registrar Medicamento'),
+              onPressed: _addOrUpdateMedication,
+              child: Text(_editingMedication == null
+                  ? 'Registrar Medicamento'
+                  : 'Actualizar Medicamento'),
             ),
             SizedBox(height: 20),
             Expanded(
@@ -107,6 +139,20 @@ class _RegisterMedicationScreenState extends State<RegisterMedicationScreen> {
                           title: Text(medication.name),
                           subtitle: Text(
                               'Dosis: ${medication.dosage}\nFecha: ${medication.dateTime}'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit),
+                                onPressed: () => _startEditing(medication),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () =>
+                                    _deleteMedication(medication.id!),
+                              ),
+                            ],
+                          ),
                         );
                       },
                     );

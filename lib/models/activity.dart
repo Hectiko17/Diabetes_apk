@@ -3,14 +3,15 @@ class Activity {
   final int userId;
   final String type;
   final int duration;
-  final DateTime dateTime;
+  final String dateTime;
 
-  Activity(
-      {this.id,
-      required this.userId,
-      required this.type,
-      required this.duration,
-      required this.dateTime});
+  Activity({
+    this.id,
+    required this.userId,
+    required this.type,
+    required this.duration,
+    required this.dateTime,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -18,7 +19,7 @@ class Activity {
       'userId': userId,
       'type': type,
       'duration': duration,
-      'dateTime': dateTime.toIso8601String(),
+      'dateTime': dateTime,
     };
   }
 
@@ -28,7 +29,7 @@ class Activity {
       userId: map['userId'],
       type: map['type'],
       duration: map['duration'],
-      dateTime: DateTime.parse(map['dateTime']),
+      dateTime: map['dateTime'],
     );
   }
 }
