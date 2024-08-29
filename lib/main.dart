@@ -34,7 +34,6 @@ class DiabetesApk extends StatelessWidget {
         '/register': (context) => RegisterScreen(),
         '/adminHome': (context) => AdminHomeScreen(),
         '/doctorHome': (context) => DoctorHomeScreen(),
-        '/syncDevices': (context) => SyncDevicesScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/patientHome') {

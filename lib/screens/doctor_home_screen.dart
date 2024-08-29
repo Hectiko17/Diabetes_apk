@@ -73,8 +73,8 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: Colors.blueGrey[900], // Fondo oscuro
-        selectedItemColor: Colors.white, // Ítem seleccionado en blanco
+        backgroundColor: Colors.black, // Fondo oscuro
+        selectedItemColor: Colors.blueGrey, // Ítem seleccionado en blanco
         unselectedItemColor: Colors.grey[400],
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:diabetes_apk/screens/register_activity_screen.dart';
 import 'package:diabetes_apk/screens/reminders_screen.dart';
 import 'package:diabetes_apk/screens/reports_screen.dart';
+import 'package:diabetes_apk/screens/sync_devices_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:diabetes_apk/models/user.dart';
 import 'package:diabetes_apk/screens/register_glucose_screen.dart';
@@ -30,6 +31,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
     _screens.add(RegisterActivityScreen(user: widget.user));
     _screens.add(ReportsScreen());
     _screens.add(RemindersScreen(user: widget.user));
+    _screens.add(SyncDevicesScreen());
   }
 
   void _onItemTapped(int index) {
@@ -78,6 +80,10 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.alarm),
             label: 'Recordatorios',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sync_lock),
+            label: 'Sincronizacion con dispositivos',
           ),
         ],
         currentIndex: _selectedIndex,

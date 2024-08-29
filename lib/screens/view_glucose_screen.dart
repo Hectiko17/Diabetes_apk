@@ -1,49 +1,53 @@
 import 'package:flutter/material.dart';
-import 'package:diabetes_apk/models/glucose_level.dart';
 import 'package:diabetes_apk/db/database_helper.dart';
+import 'package:diabetes_apk/models/glucose_level.dart';
+import 'package:diabetes_apk/models/user.dart';
 
-class ViewGlucoseScreen extends StatefulWidget {
-  @override
-  _ViewGlucoseScreenState createState() => _ViewGlucoseScreenState();
-}
+class ViewGlucoseScreen extends StatelessWidget {
+  Future<Map<GlucoseLevel, User>> _fetchGlucoseData() async {
+    final levels = await DatabaseHelper.instance.getAllGlucoseLevels();
+    final Map<GlucoseLevel, User> glucoseData = {};
 
-class _ViewGlucoseScreenState extends State<ViewGlucoseScreen> {
-  late Future<List<GlucoseLevel>> _glucoseLevels;
-
-  @override
-  void initState() {
-    super.initState();
-    _glucoseLevels = DatabaseHelper.instance
-        .getAllGlucoseLevels(); // Recupera todos los niveles de glucosa
+    for (var level in levels) {
+      final user = await DatabaseHelper.instance.getUserById(level.userId);
+      if (user != null) {
+        glucoseData[level] = user;
+      }
+    }
+    return glucoseData;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Niveles de Glucemia de Todos los Pacientes'),
+        title: Text('Ver Glucemias'),
       ),
-      body: FutureBuilder<List<GlucoseLevel>>(
-        future: _glucoseLevels,
+      body: FutureBuilder<Map<GlucoseLevel, User>>(
+        future: _fetchGlucoseData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(
-                child: Text('Error al cargar los niveles de glucosa.'));
+            return Center(child: Text('Error al cargar las glucemias.'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(
-                child: Text('No hay niveles de glucosa registrados.'));
+            return Center(child: Text('No hay registros de glucemia.'));
           } else {
-            final levels = snapshot.data!;
+            final glucoseData = snapshot.data!;
             return ListView.builder(
-              itemCount: levels.length,
+              itemCount: glucoseData.length,
               itemBuilder: (context, index) {
-                final level = levels[index];
+                final entry = glucoseData.entries.elementAt(index);
+                final glucoseLevel = entry.key;
+                final user = entry.value;
+
                 return ListTile(
-                  title: Text('Nivel: ${level.level}'),
+                  title: Text('Glucemia: ${glucoseLevel.level} mg/dL'),
                   subtitle: Text(
-                      'Paciente ID: ${level.userId}\nFecha: ${level.dateTime}'),
+                    'Paciente: ${user.firstName} ${user.lastName}\n'
+                    'Fecha: ${glucoseLevel.dateTime}\n'
+                    'Edad: ${user.age} años, Peso: ${user.weight} kg, Talla: ${user.height} cm',
+                  ),
                 );
               },
             );
