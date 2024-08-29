@@ -1,4 +1,5 @@
 import 'package:diabetes_apk/screens/register_activity_screen.dart';
+import 'package:diabetes_apk/screens/reminders_screen.dart';
 import 'package:diabetes_apk/screens/reports_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:diabetes_apk/models/user.dart';
@@ -28,6 +29,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
     _screens.add(RegisterMedicationScreen(user: widget.user));
     _screens.add(RegisterActivityScreen(user: widget.user));
     _screens.add(ReportsScreen());
+    _screens.add(RemindersScreen(user: widget.user));
   }
 
   void _onItemTapped(int index) {
@@ -72,6 +74,10 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
           BottomNavigationBarItem(
             icon: Icon(Icons.report),
             label: 'Reportes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.alarm),
+            label: 'Recordatorios',
           ),
         ],
         currentIndex: _selectedIndex,

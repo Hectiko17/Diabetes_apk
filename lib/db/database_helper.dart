@@ -197,6 +197,40 @@ class DatabaseHelper {
     await db.insert('medications', medication.toMap());
   }
 
+  // Insertar un recordatorio
+  Future<void> insertReminder(Reminder reminder) async {
+    final db = await instance.database;
+    await db.insert('reminders', reminder.toMap());
+  }
+
+// Obtener todos los recordatorios de un usuario
+  Future<List<Reminder>> getRemindersByUser(int userId) async {
+    final db = await instance.database;
+    final result = await db.query('reminders',
+        where: 'userId = ?', whereArgs: [userId], orderBy: 'dateTime DESC');
+    return result.map((json) => Reminder.fromMap(json)).toList();
+  }
+
+// Obtener todos los recordatorios de todos los usuarios
+  Future<List<Reminder>> getAllReminders() async {
+    final db = await instance.database;
+    final result = await db.query('reminders', orderBy: 'dateTime DESC');
+    return result.map((json) => Reminder.fromMap(json)).toList();
+  }
+
+// Actualizar un recordatorio
+  Future<void> updateReminder(Reminder reminder) async {
+    final db = await instance.database;
+    await db.update('reminders', reminder.toMap(),
+        where: 'id = ?', whereArgs: [reminder.id]);
+  }
+
+// Eliminar un recordatorio
+  Future<void> deleteReminder(int id) async {
+    final db = await instance.database;
+    await db.delete('reminders', where: 'id = ?', whereArgs: [id]);
+  }
+
   // Eliminar un nivel de glucemia
   Future<void> deleteGlucoseLevel(int id) async {
     final db = await instance.database;
