@@ -24,25 +24,21 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   void _loadData() async {
-    // Cargar datos de glucosa
     final glucoseLevels = await DatabaseHelper.instance.getAllGlucoseLevels();
     final glucoseSpots = glucoseLevels.asMap().entries.map((entry) {
       return FlSpot(entry.key.toDouble(), entry.value.level);
     }).toList();
 
-    // Cargar datos de comidas
     final meals = await DatabaseHelper.instance.getAllMeals();
     final mealSpots = meals.asMap().entries.map((entry) {
       return FlSpot(entry.key.toDouble(), entry.value.calories.toDouble());
     }).toList();
 
-    // Cargar datos de medicamentos (simulados como cantidad de dosis)
     final medications = await DatabaseHelper.instance.getAllMedications();
     final medicationSpots = medications.asMap().entries.map((entry) {
       return FlSpot(entry.key.toDouble(), entry.value.dosage.length.toDouble());
     }).toList();
 
-    // Cargar datos de actividades
     final activities = await DatabaseHelper.instance.getAllActivities();
     final activitySpots = activities.asMap().entries.map((entry) {
       return FlSpot(entry.key.toDouble(), entry.value.duration.toDouble());
@@ -67,16 +63,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Text('Niveles de Glucosa', style: TextStyle(fontSize: 18)),
+              Text('Niveles de Glucosa (mg/dL)',
+                  style: TextStyle(fontSize: 18)),
               SizedBox(height: 200, child: _buildGlucoseChart()),
               SizedBox(height: 20),
-              Text('Calorías de Comidas', style: TextStyle(fontSize: 18)),
+              Text('Calorías de Comidas (kcal)',
+                  style: TextStyle(fontSize: 18)),
               SizedBox(height: 200, child: _buildMealChart()),
               SizedBox(height: 20),
               Text('Dosis de Medicamentos', style: TextStyle(fontSize: 18)),
               SizedBox(height: 200, child: _buildMedicationChart()),
               SizedBox(height: 20),
-              Text('Duración de Actividades Físicas',
+              Text('Duración de Actividades Físicas (minutos)',
                   style: TextStyle(fontSize: 18)),
               SizedBox(height: 200, child: _buildActivityChart()),
             ],
@@ -90,8 +88,22 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return LineChart(
       LineChartData(
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('${value.toInt()} mg/dL');
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('Día ${value.toInt()}');
+              },
+            ),
+          ),
         ),
         borderData:
             FlBorderData(show: true, border: Border.all(color: Colors.grey)),
@@ -100,7 +112,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             spots: _glucoseData,
             isCurved: true,
             barWidth: 2,
-            color: Colors.blue, // Usar un solo color
+            color: Colors.blue,
             dotData: FlDotData(show: false),
           ),
         ],
@@ -112,8 +124,22 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return LineChart(
       LineChartData(
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('${value.toInt()} kcal');
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('Día ${value.toInt()}');
+              },
+            ),
+          ),
         ),
         borderData:
             FlBorderData(show: true, border: Border.all(color: Colors.grey)),
@@ -122,7 +148,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             spots: _mealData,
             isCurved: true,
             barWidth: 2,
-            color: Colors.red, // Usar un solo color
+            color: Colors.red,
             dotData: FlDotData(show: false),
           ),
         ],
@@ -134,8 +160,22 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return LineChart(
       LineChartData(
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('${value.toInt()} dosis');
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('Día ${value.toInt()}');
+              },
+            ),
+          ),
         ),
         borderData:
             FlBorderData(show: true, border: Border.all(color: Colors.grey)),
@@ -144,7 +184,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             spots: _medicationData,
             isCurved: true,
             barWidth: 2,
-            color: Colors.green, // Usar un solo color
+            color: Colors.green,
             dotData: FlDotData(show: false),
           ),
         ],
@@ -156,8 +196,22 @@ class _ReportsScreenState extends State<ReportsScreen> {
     return LineChart(
       LineChartData(
         titlesData: FlTitlesData(
-          leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
-          bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('${value.toInt()} min');
+              },
+            ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                return Text('Día ${value.toInt()}');
+              },
+            ),
+          ),
         ),
         borderData:
             FlBorderData(show: true, border: Border.all(color: Colors.grey)),
@@ -166,7 +220,7 @@ class _ReportsScreenState extends State<ReportsScreen> {
             spots: _activityData,
             isCurved: true,
             barWidth: 2,
-            color: Colors.purple, // Usar un solo color
+            color: Colors.purple,
             dotData: FlDotData(show: false),
           ),
         ],

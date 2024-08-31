@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:diabetes_apk/screens/view_glucose_screen.dart';
+import 'package:diabetes_apk/screens/view_meal_screen.dart';
+import 'package:diabetes_apk/screens/view_medication_screen.dart';
+import 'package:diabetes_apk/screens/view_activity_screen.dart';
+import 'package:diabetes_apk/screens/view_reminders_screen.dart';
+import 'package:diabetes_apk/screens/reports_screen.dart';
+import 'package:diabetes_apk/screens/register_glucose_screen.dart';
 import 'package:diabetes_apk/screens/register_meal_screen.dart';
 import 'package:diabetes_apk/screens/register_medication_screen.dart';
 import 'package:diabetes_apk/screens/register_activity_screen.dart';
 import 'package:diabetes_apk/screens/reminders_screen.dart';
-import 'package:diabetes_apk/screens/reports_screen.dart';
 import 'package:diabetes_apk/screens/sync_devices_screen.dart';
 import 'package:diabetes_apk/models/user.dart';
 
@@ -16,31 +21,23 @@ class AdminHomeScreen extends StatefulWidget {
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   int _selectedIndex = 0;
 
-  // Puedes usar un usuario predeterminado como el administrador
-  final User adminUser = User(
-    id: 1,
-    username: 'Hectiko',
-    password: '1417',
-    role: 'admin',
-    firstName: 'Hector',
-    lastName: 'Admin',
-    age: 35,
-    weight: 75.0,
-    height: 175.0,
-  );
+  final List<Widget> _screens = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _screens.add(ViewGlucoseScreen()); // Ver y gestionar glucemias
+    _screens.add(ViewMealScreen()); // Ver y gestionar comidas
+    _screens.add(ViewMedicationScreen()); // Ver y gestionar medicamentos
+    _screens.add(ViewActivityScreen()); // Ver y gestionar actividades
+    _screens.add(ViewRemindersScreen()); // Ver y gestionar recordatorios
+    _screens.add(ReportsScreen()); // Ver informes
+    _screens.add(SyncDevicesScreen()); // Sincronización con dispositivos
+  }
 
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-
-      if (index == 1) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => RegisterMealScreen(user: adminUser),
-          ),
-        );
-      }
     });
   }
 
@@ -58,15 +55,12 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
           ),
         ],
       ),
-      body: Center(
-        child: Text('Selecciona una opción del menú.',
-            style: TextStyle(fontSize: 18)),
-      ),
+      body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
             icon: Icon(Icons.bloodtype),
-            label: 'Ver Glucemias',
+            label: 'Glucemias',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.fastfood),
@@ -95,10 +89,9 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
         ],
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        backgroundColor: Colors.blueGrey[900], // Fondo oscuro
-        selectedItemColor: Colors.white, // Ítem seleccionado en blanco
-        unselectedItemColor:
-            Colors.grey[400], // Ítems no seleccionados en gris claro
+        backgroundColor: Colors.black, // Fondo oscuro
+        selectedItemColor: Colors.blueGrey, // Ítem seleccionado
+        unselectedItemColor: Colors.grey[400],
       ),
     );
   }

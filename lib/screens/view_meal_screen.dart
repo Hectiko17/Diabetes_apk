@@ -1,47 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:diabetes_apk/models/meal.dart';
 import 'package:diabetes_apk/db/database_helper.dart';
+import 'package:diabetes_apk/models/meal.dart';
+import 'package:diabetes_apk/models/user.dart';
 
-class ViewMealScreen extends StatefulWidget {
-  @override
-  _ViewMealScreenState createState() => _ViewMealScreenState();
-}
+class ViewMealScreen extends StatelessWidget {
+  Future<Map<Meal, User>> _fetchMealData() async {
+    final meals = await DatabaseHelper.instance.getAllMeals();
+    final Map<Meal, User> mealData = {};
 
-class _ViewMealScreenState extends State<ViewMealScreen> {
-  late Future<List<Meal>> _meals;
-
-  @override
-  void initState() {
-    super.initState();
-    _meals =
-        DatabaseHelper.instance.getAllMeals(); // Recupera todas las comidas
+    for (var meal in meals) {
+      final user = await DatabaseHelper.instance.getUserById(meal.userId);
+      if (user != null) {
+        mealData[meal] = user;
+      }
+    }
+    return mealData;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Comidas de Todos los Pacientes'),
+        title: Text('Ver Comidas'),
       ),
-      body: FutureBuilder<List<Meal>>(
-        future: _meals,
+      body: FutureBuilder<Map<Meal, User>>(
+        future: _fetchMealData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error al cargar las comidas.'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No hay comidas registradas.'));
+            return Center(child: Text('No hay registros de comidas.'));
           } else {
-            final meals = snapshot.data!;
+            final mealData = snapshot.data!;
             return ListView.builder(
-              itemCount: meals.length,
+              itemCount: mealData.length,
               itemBuilder: (context, index) {
-                final meal = meals[index];
+                final entry = mealData.entries.elementAt(index);
+                final meal = entry.key;
+                final user = entry.value;
+
                 return ListTile(
-                  title: Text(meal.mealName),
+                  title: Text('Comida: ${meal.mealName}'),
                   subtitle: Text(
-                      'Paciente ID: ${meal.userId}\nCalorías: ${meal.calories}\nFecha: ${meal.dateTime}'),
+                    'Calorías: ${meal.calories}\n'
+                    'Paciente: ${user.firstName} ${user.lastName}\n'
+                    'Fecha: ${meal.dateTime}\n'
+                    'Edad: ${user.age} años, Peso: ${user.weight} kg, Talla: ${user.height} cm',
+                  ),
                 );
               },
             );
